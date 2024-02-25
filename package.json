@@ -1,0 +1,18 @@
+{
+  "name": "speisekarte",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build:server": "npm run build --workspace=@speisekarte/server",
+    "start:server": "npm run start --workspace=@speisekarte/server",
+    "build:webapp": "npm run build --workspace=@speisekarte/webapp",
+    "start:webapp": "npm run start --workspace=@speisekarte/webapp"
+  }
+}
