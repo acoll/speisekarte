@@ -4,19 +4,11 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 
-import { json, type MetaFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
-import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { api } from "~/lib/api";
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Speisekarte" },
-    { name: "description", content: "What's for dinner?" },
-  ];
-};
 
 export const loader = async () => {
   const [plannedMealsResponse, shoppingListResponse] = await Promise.all([
@@ -84,18 +76,8 @@ export default function Component() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Weekly Meal Planner</h1>
-        <div className="flex items-center gap-2">
-          <Link to="/recipes/new">
-            <Button>Add Recipe</Button>
-          </Link>
-          <Link to="/recipes">
-            <Button>Recipes</Button>
-          </Link>
-        </div>
-      </div>
+    <div className="mx-auto py-8 container">
+      <h1 className="text-3xl font-bold mb-6">Weekly Meal Planner</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {daysOfWeek.map((day, index) => (
           // TODO: Build a page for the meal instead of linking back to the recipe

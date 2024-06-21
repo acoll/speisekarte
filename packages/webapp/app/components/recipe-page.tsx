@@ -4,7 +4,7 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 
-import { Link, useNavigate } from "@remix-run/react";
+import { Link } from "@remix-run/react";
 import { Button } from "./ui/button";
 
 type RecipePageComponentProps = {
@@ -21,8 +21,6 @@ type RecipePageComponentProps = {
 export function RecipePageComponent(props: RecipePageComponentProps) {
   const { recipe } = props;
 
-  const navigate = useNavigate();
-
   return (
     <div className="flex flex-col">
       <section className="bg-muted py-12 md:py-16 lg:py-20">
@@ -36,9 +34,8 @@ export function RecipePageComponent(props: RecipePageComponentProps) {
                 {recipe.description}
               </p>
               <div className="flex items-center gap-4">
-                <Button onClick={() => navigate(-1)}>Back</Button>
                 <Link to="./add">
-                  <Button>Add to meal plan</Button>
+                  <Button>Make it next week</Button>
                 </Link>
               </div>
             </div>

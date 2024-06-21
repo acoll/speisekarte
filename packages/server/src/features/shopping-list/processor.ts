@@ -19,7 +19,7 @@ export class ShoppingListProcessor extends Processor {
       z.object({
         name: z.string(),
         category: z.string(),
-        quantity: z.string(),
+        quantity: z.coerce.string(),
       }),
     ),
   });

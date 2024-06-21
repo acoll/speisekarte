@@ -45,7 +45,7 @@ export default function RecipesList() {
   return (
     <>
       <Outlet />
-      <div className="max-w-6xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto py-8 container">
         <div className="mb-10">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold tracking-tight">
@@ -93,7 +93,7 @@ const RecipeCard = (props: RecipeCardProps) => {
   const imageUrl = recipe.pending ? "/pending.webp" : `/image/${recipe.id}`;
 
   return (
-    <Link to={`/recipes/${recipe.id}`}>
+    <Link to={`/recipe/${recipe.id}`}>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <div className="relative">
           <img

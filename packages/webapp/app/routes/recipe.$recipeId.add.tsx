@@ -76,7 +76,7 @@ export default function RecipePage() {
             <input type="hidden" name="recipeId" value={recipe.id} />
             <Button
               type="button"
-              onClick={() => navigate(`/recipes/${recipe.id}`)}
+              onClick={() => navigate(`/recipe/${recipe.id}`)}
             >
               Cancel
             </Button>
@@ -94,5 +94,5 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   await api.planMeal({ body: { recipeId } });
 
-  return redirect(`/recipes/${recipeId}`);
+  return redirect(`/recipe/${recipeId}`);
 };
