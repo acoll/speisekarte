@@ -44,7 +44,10 @@ export class ScraperProcessor {
 
   private async scrapeRecipe(url: string) {
     // Launch the browser
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox'],
+    });
 
     // Open a new tab
     const page = await browser.newPage();
