@@ -47,7 +47,7 @@ export class ParserProcessor {
     }
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS, { name: ParserProcessor.name })
+  @Cron(CronExpression.EVERY_SECOND, { name: ParserProcessor.name })
   async handleCron() {
     const job = this.schedulerRegistry.getCronJob(ParserProcessor.name);
     job.stop();

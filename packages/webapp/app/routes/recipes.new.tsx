@@ -65,5 +65,5 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   await api.saveRecipe({ body: { url } });
 
-  return redirect("/");
+  return redirect("/recipes");
 };

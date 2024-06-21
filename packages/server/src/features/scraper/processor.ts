@@ -28,7 +28,7 @@ export class ScraperProcessor {
     }
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS, { name: ScraperProcessor.name })
+  @Cron(CronExpression.EVERY_SECOND, { name: ScraperProcessor.name })
   async handleCron() {
     const job = this.schedulerRegistry.getCronJob(ScraperProcessor.name);
     job.stop();

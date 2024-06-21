@@ -3,7 +3,14 @@
  * @see https://v0.dev/t/lrWthrFiBql
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
-import { Link, Outlet, json, useLoaderData } from "@remix-run/react";
+import {
+  Link,
+  Outlet,
+  json,
+  useLoaderData,
+  useRevalidator,
+} from "@remix-run/react";
+import { useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { api } from "~/lib/api";
@@ -20,6 +27,20 @@ export const loader = async () => {
 
 export default function RecipesList() {
   const { recipes } = useLoaderData<typeof loader>();
+
+  const hasPending = recipes.some((recipe) => recipe.pending);
+
+  const revalidator = useRevalidator();
+
+  useEffect(() => {
+    if (hasPending) {
+      const timeout = setTimeout(() => {
+        revalidator.revalidate();
+      }, 1000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [hasPending, revalidator]);
 
   return (
     <>
