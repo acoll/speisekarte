@@ -84,7 +84,7 @@ export default function Component() {
           // This is for the future case where you've planned and shopped and then changed a recipe.
           // You would want to see the steps and ingredients that you planned, not the new updated recipe.
           <Link
-            to={meals[index] ? `/recipes/${meals[index]?.recipeId}` : "/"}
+            to={meals[index] ? `/recipe/${meals[index]?.recipeId}` : "/"}
             key={day}
           >
             <div className="bg-white shadow-md rounded-lg p-4">

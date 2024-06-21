@@ -47,7 +47,7 @@ export default function RecipePage() {
       defaultOpen
       onOpenChange={(isOpen) => {
         if (!isOpen) {
-          navigate(`/recipes/${recipe.id}`);
+          navigate(`/recipe/${recipe.id}`);
         }
       }}
     >

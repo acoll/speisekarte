@@ -17,6 +17,7 @@ To read more about using these font, please visit the Next.js documentation:
 - App Directory: https://nextjs.org/docs/app/building-your-application/optimizing/fonts
 - Pages Directory: https://nextjs.org/docs/pages/building-your-application/optimizing/fonts
 **/
+import { SignedIn, UserButton } from "@clerk/remix";
 import { Link } from "@remix-run/react";
 import { SVGProps } from "react";
 import { Button } from "~/components/ui/button";
@@ -52,6 +53,9 @@ export function NavBar() {
           >
             Add Recipe
           </Link>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
         </nav>
         <Sheet>
           <SheetTrigger asChild>
@@ -95,6 +99,9 @@ export function NavBar() {
                   <PlusIcon className="h-5 w-5" />
                   Add Recipe
                 </Link>
+                <SignedIn>
+                  <UserButton />
+                </SignedIn>
               </nav>
             </div>
           </SheetContent>

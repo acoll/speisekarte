@@ -1,4 +1,6 @@
-import { MetaFunction } from "@remix-run/node";
+import { ClerkApp } from "@clerk/remix";
+import { rootAuthLoader } from "@clerk/remix/ssr.server";
+import { LoaderFunction, MetaFunction } from "@remix-run/node";
 import {
   Links,
   Meta,
@@ -15,6 +17,8 @@ export const meta: MetaFunction = () => {
     { name: "description", content: "What's for dinner?" },
   ];
 };
+
+export const loader: LoaderFunction = (args) => rootAuthLoader(args);
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -52,7 +56,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
+function App() {
   return (
     <div>
       <NavBar />
@@ -60,3 +64,5 @@ export default function App() {
     </div>
   );
 }
+
+export default ClerkApp(App);
