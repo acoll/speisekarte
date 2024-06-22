@@ -12,7 +12,6 @@ const RecipeScraped = z.object({
   type: z.literal('recipe-scraped'),
   recipeId: z.string(),
   text: z.string(),
-  images: z.array(z.string()),
 });
 
 type RecipeScraped = z.infer<typeof RecipeScraped>;

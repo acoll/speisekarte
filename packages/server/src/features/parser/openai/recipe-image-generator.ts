@@ -15,9 +15,10 @@ export class OpenAIRecipeImageGenerator extends RecipeImageGenerator {
   async generateImage(recipeName: string) {
     const response = await this.openai.images.generate({
       model: 'dall-e-3',
-      prompt: recipeName,
+      prompt: this.prompt(recipeName),
       n: 1,
       size: '1024x1024',
+      style: 'natural',
     });
 
     const url = response.data[0].url;
@@ -29,6 +30,10 @@ export class OpenAIRecipeImageGenerator extends RecipeImageGenerator {
     const buffer = await this.downloadImage(url);
 
     return buffer;
+  }
+
+  private prompt(recipeName: string) {
+    return `${recipeName}. photorealistic, homemade`;
   }
 
   private async downloadImage(url: string): Promise<Buffer> {

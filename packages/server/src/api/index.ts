@@ -19,7 +19,11 @@ export const contract = c.router({
         z.object({
           id: z.string(),
           name: z.string(),
-          pending: z.boolean(),
+          status: z.union([
+            z.literal('scraping'),
+            z.literal('parsing'),
+            z.literal('done'),
+          ]),
         }),
       ),
     },

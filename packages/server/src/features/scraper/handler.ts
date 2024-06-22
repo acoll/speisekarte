@@ -21,7 +21,6 @@ export class ScrapeRecipeHandler
     await this.eventstore.appendEvent({
       type: 'recipe-scraped',
       recipeId: command.recipeId,
-      images: command.images,
       text: command.content,
     });
   }

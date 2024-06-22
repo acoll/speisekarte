@@ -28,7 +28,7 @@ export const loader = async () => {
 export default function RecipesList() {
   const { recipes } = useLoaderData<typeof loader>();
 
-  const hasPending = recipes.some((recipe) => recipe.pending);
+  const hasPending = recipes.some((recipe) => recipe.status !== "done");
 
   const revalidator = useRevalidator();
 
@@ -83,17 +83,18 @@ type RecipeCardProps = {
   recipe: {
     id: string;
     name: string;
-    pending: boolean;
+    status: "scraping" | "parsing" | "done";
   };
 };
 
 const RecipeCard = (props: RecipeCardProps) => {
   const { recipe } = props;
 
-  const imageUrl = recipe.pending ? "/pending.webp" : `/image/${recipe.id}`;
+  const imageUrl =
+    recipe.status === "done" ? `/image/${recipe.id}` : "/pending.webp";
 
   return (
-    <Link to={`/recipe/${recipe.id}`}>
+    <Link to={recipe.status === "done" ? `/recipe/${recipe.id}` : "/recipes"}>
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <div className="relative">
           <img
@@ -103,9 +104,9 @@ const RecipeCard = (props: RecipeCardProps) => {
             height={200}
             className="w-full h-48 object-cover"
           />
-          {recipe.pending && (
+          {recipe.status !== "done" && (
             <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded-md text-xs">
-              Pending
+              {recipe.status === "parsing" ? "Reading..." : "Fetching..."}
             </div>
           )}
         </div>

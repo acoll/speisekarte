@@ -6,7 +6,7 @@ export class RecipesReadModel extends ReadModel<RecipesReadModel> {
   recipes: {
     id: string;
     name: string;
-    pending: boolean;
+    status: 'scraping' | 'parsing' | 'done';
   }[] = [];
 
   options: GetEventsOptions = {};
@@ -17,15 +17,22 @@ export class RecipesReadModel extends ReadModel<RecipesReadModel> {
         this.recipes.push({
           id: event.recipeId,
           name: '',
-          pending: true,
+          status: 'scraping',
         });
+      }
+
+      if (event.type === 'recipe-scraped') {
+        const recipe = this.recipes.find((r) => r.id === event.recipeId);
+        if (recipe) {
+          recipe.status = 'parsing';
+        }
       }
 
       if (event.type === 'recipe-parsed') {
         const recipe = this.recipes.find((r) => r.id === event.recipeId);
         if (recipe) {
           recipe.name = event.name;
-          recipe.pending = false;
+          recipe.status = 'done';
         }
       }
     }

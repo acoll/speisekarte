@@ -2,15 +2,15 @@ import { Injectable } from '@nestjs/common';
 import { z } from 'zod';
 import { OpenAIService } from '~/openai/service';
 
-export abstract class RecipeParser {
-  abstract parseRecipe(content: string): Promise<Recipe>;
-}
-
 type Recipe = {
   ingredients: string[];
   instructions: string[];
   name: string;
 };
+
+export abstract class RecipeParser {
+  abstract parseRecipe(content: string): Promise<Recipe>;
+}
 
 @Injectable()
 export class OpenAIRecipeParser extends RecipeParser {
