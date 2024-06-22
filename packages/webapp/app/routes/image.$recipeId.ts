@@ -22,6 +22,7 @@ export const loader: LoaderFunction = async ({ params }) => {
     headers: {
       "Content-Type": "image/png",
       "Content-Disposition": `inline; filename="${recipeId}.png"`,
+      "Cache-Control": "public, max-age=31536000, immutable", // Set cache to effectively never expire
     },
   });
 };
