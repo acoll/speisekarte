@@ -9,9 +9,10 @@ export class ParseRecipeHandler implements ICommandHandler<ParseRecipeCommand> {
     await this.eventstore.appendEvent({
       type: 'recipe-parsed',
       recipeId: command.recipeId,
+      name: command.name,
+      description: command.description,
       ingredients: command.ingredients,
       instructions: command.instructions,
-      name: command.name,
     });
   }
 }

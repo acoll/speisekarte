@@ -3,9 +3,10 @@ import { z } from 'zod';
 import { OpenAIService } from '~/openai/service';
 
 type Recipe = {
+  name: string;
+  description: string;
   ingredients: string[];
   instructions: string[];
-  name: string;
 };
 
 export abstract class RecipeParser {
@@ -16,6 +17,7 @@ export abstract class RecipeParser {
 export class OpenAIRecipeParser extends RecipeParser {
   private RecipeSchema = z.object({
     name: z.string(),
+    description: z.string(),
     ingredients: z.array(z.string()),
     instructions: z.array(z.string()),
   });
@@ -46,8 +48,8 @@ export class OpenAIRecipeParser extends RecipeParser {
   private prompt() {
     return `
             Your task is to analyze the given text and extract crucial information such as the 
-            meal's name, ingredients list, and instructions list. Include ingredient quantities. 
-            Return a json object containing name as a string, ingredients as an array of strings, 
+            meal's name, a one sentence description, ingredients list, and instructions list. Include ingredient quantities. 
+            Return a json object containing name as a string, description as a string, ingredients as an array of strings, 
             and instructions as an array of strings.
           `;
   }
@@ -58,6 +60,7 @@ export class MockRecipeParser extends RecipeParser {
   async parseRecipe(): Promise<Recipe> {
     return {
       name: 'Mock Recipe',
+      description: 'This is a mock recipe',
       ingredients: ['1 cup of water', '1 cup of sugar'],
       instructions: ['Mix the water and sugar', 'Enjoy'],
     };
