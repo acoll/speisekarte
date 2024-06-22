@@ -4,13 +4,15 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 
-import { json } from "@remix-run/node";
+import { LoaderFunctionArgs, json } from "@remix-run/node";
 import { Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
 import { Checkbox } from "~/components/ui/checkbox";
-import { api } from "~/lib/api";
+import { getApiClient } from "~/lib/api";
 
-export const loader = async () => {
+export const loader = async (args: LoaderFunctionArgs) => {
+  const api = await getApiClient(args);
+
   const [plannedMealsResponse, shoppingListResponse] = await Promise.all([
     api.plannedMeals(),
     api.shoppingList(),

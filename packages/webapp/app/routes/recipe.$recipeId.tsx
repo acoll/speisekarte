@@ -1,10 +1,12 @@
 import { ActionFunctionArgs, LoaderFunctionArgs, json } from "@remix-run/node";
 import { Outlet, redirect, useLoaderData } from "@remix-run/react";
 import { RecipePageComponent } from "~/components/recipe-page";
-import { api } from "~/lib/api";
+import { getApiClient } from "~/lib/api";
 
 export const loader = async (args: LoaderFunctionArgs) => {
   const { recipeId } = args.params;
+
+  const api = await getApiClient(args);
 
   const recipeResponse = await api.recipe({ params: { recipeId: recipeId! } });
 
@@ -37,9 +39,11 @@ export default function RecipePage() {
   );
 }
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
+export const action = async (args: ActionFunctionArgs) => {
+  const formData = await args.request.formData();
   const recipeId = String(formData.get("recipeId"));
+
+  const api = await getApiClient(args);
 
   await api.planMeal({ body: { recipeId } });
 

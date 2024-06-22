@@ -3,6 +3,7 @@
  * @see https://v0.dev/t/lrWthrFiBql
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
+import { LoaderFunctionArgs } from "@remix-run/node";
 import {
   Link,
   Outlet,
@@ -13,9 +14,10 @@ import {
 import { useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
-import { api } from "~/lib/api";
+import { getApiClient } from "~/lib/api";
 
-export const loader = async () => {
+export const loader = async (args: LoaderFunctionArgs) => {
+  const api = await getApiClient(args);
   const response = await api.list();
 
   if (response.status !== 200) {
