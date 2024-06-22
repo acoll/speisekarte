@@ -61,6 +61,7 @@ export default function RecipesList() {
               <div>
                 <Input
                   type="search"
+                  disabled
                   placeholder="Search recipes..."
                   className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400"
                 />
