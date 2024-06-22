@@ -35,7 +35,7 @@ export function RecipePageComponent(props: RecipePageComponentProps) {
               </p>
               <div className="flex items-center gap-4">
                 <Link to="./add">
-                  <Button>Make it next week</Button>
+                  <Button>Add to meal plan</Button>
                 </Link>
               </div>
             </div>

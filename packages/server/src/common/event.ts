@@ -19,9 +19,10 @@ type RecipeScraped = z.infer<typeof RecipeScraped>;
 const RecipeParsed = z.object({
   type: z.literal('recipe-parsed'),
   recipeId: z.string(),
+  name: z.string(),
+  description: z.string().optional().default(''),
   ingredients: z.array(z.string()),
   instructions: z.array(z.string()),
-  name: z.string(),
 });
 
 type RecipeParsed = z.infer<typeof RecipeParsed>;

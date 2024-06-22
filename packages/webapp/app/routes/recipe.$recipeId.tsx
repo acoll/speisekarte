@@ -26,7 +26,7 @@ export default function RecipePage() {
       <RecipePageComponent
         recipe={{
           name: recipe.name,
-          description: "", // TODO
+          description: recipe.description,
           imageUrl: `/image/${recipe.id}`,
           ingredients: recipe.ingredients,
           instructions: recipe.instructions,

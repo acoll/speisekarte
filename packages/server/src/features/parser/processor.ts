@@ -39,7 +39,7 @@ export class ParserProcessor extends Processor {
       // do the actual scraping
       for (const recipe of recipesToBeParsed.recipes) {
         try {
-          const { ingredients, name, instructions } =
+          const { name, description, ingredients, instructions } =
             await this.recipeParser.parseRecipe(recipe.content);
 
           const imageBuffer =
@@ -53,8 +53,9 @@ export class ParserProcessor extends Processor {
           await this.commandBus.execute(
             new ParseRecipeCommand({
               recipeId: recipe.id,
-              ingredients,
               name,
+              description,
+              ingredients,
               instructions,
             }),
           );

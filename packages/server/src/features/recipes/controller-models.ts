@@ -6,6 +6,7 @@ export class RecipesReadModel extends ReadModel<RecipesReadModel> {
   recipes: {
     id: string;
     name: string;
+
     status: 'scraping' | 'parsing' | 'done';
   }[] = [];
 
@@ -49,6 +50,7 @@ export class RecipeReadModel extends ReadModel<RecipeReadModel> {
   recipe: {
     id: string;
     name: string;
+    description: string;
     ingredients: string[];
     instructions: string[];
   } | null = null;
@@ -63,6 +65,7 @@ export class RecipeReadModel extends ReadModel<RecipeReadModel> {
         this.recipe = {
           id: event.recipeId,
           name: event.name,
+          description: event.description,
           ingredients: event.ingredients,
           instructions: event.instructions,
         };
