@@ -34,6 +34,10 @@ export class PrismaEventstore extends Eventstore {
       };
     }
 
+    if (options?.tenantId) {
+      where.tenantId = options.tenantId;
+    }
+
     const rawRecords = await this.prisma.eventstore.findMany({
       where,
       orderBy: { id: 'asc' },

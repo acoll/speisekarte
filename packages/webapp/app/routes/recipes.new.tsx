@@ -60,7 +60,6 @@ export default function AddRecipe() {
 }
 
 export const action = async (args: ActionFunctionArgs) => {
-  console.log(args);
   const api = await getApiClient(args);
 
   const { request } = args;

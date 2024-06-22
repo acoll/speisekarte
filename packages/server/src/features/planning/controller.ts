@@ -16,12 +16,12 @@ export class WeekPlanController {
   ) {}
 
   @TsRestHandler(contract.plannedMeals)
-  async plannedMeals() {
+  async plannedMeals(@Req() req: Request) {
     return tsRestHandler(contract.plannedMeals, async () => {
       const startOfNextWeek = dayjs().startOf('week').add(1, 'week').toDate();
 
       const { meals } = await this.eventStore.loadReadModel(
-        new PlannedMeals(startOfNextWeek),
+        new PlannedMeals(startOfNextWeek, req.userId),
       );
 
       return { status: 200, body: { meals } };

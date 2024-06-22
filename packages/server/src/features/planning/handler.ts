@@ -9,7 +9,7 @@ export class PlanMealHandler implements ICommandHandler<PlanMealCommand> {
   constructor(private readonly eventstore: Eventstore) {}
   async execute(command: PlanMealCommand) {
     const weekPlan = await this.eventstore.loadReadModel(
-      new PlannedMeals(command.data.scheduledForWeekOf),
+      new PlannedMeals(command.data.scheduledForWeekOf, command.tenantId),
     );
 
     if (weekPlan.meals.size >= 7) {

@@ -91,10 +91,9 @@ export default function RecipePage() {
 }
 
 export const action = async (args: ActionFunctionArgs) => {
+  const api = await getApiClient(args);
   const formData = await args.request.formData();
   const recipeId = String(formData.get("recipeId"));
-
-  const api = await getApiClient(args);
 
   await api.planMeal({ body: { recipeId } });
 
