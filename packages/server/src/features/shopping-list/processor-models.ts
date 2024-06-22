@@ -3,10 +3,15 @@ import { EventRecord } from '~/common/event';
 import { GetEventsOptions } from '~/common/eventstore';
 import { ReadModel } from '~/common/readmodel';
 
-export class PlannedMeals extends ReadModel<PlannedMeals> {
-  options: GetEventsOptions = { types: ['meal-planned'], limit: 100 };
+type TenantID = string;
 
-  meals: { id: string; ingredients: string[] }[] = [];
+export class TenantsWithUnaggregatedShoppingList extends ReadModel<TenantsWithUnaggregatedShoppingList> {
+  options: GetEventsOptions = {
+    types: ['meal-planned', 'shopping-list-aggregated'],
+    limit: 100,
+  };
+
+  tenantIds: Set<TenantID> = new Set();
 
   constructor(private readonly startOfWeek: Date) {
     super();
@@ -15,13 +20,19 @@ export class PlannedMeals extends ReadModel<PlannedMeals> {
   apply(events: EventRecord[]) {
     const startOfWeek = dayjs(this.startOfWeek);
 
-    for (const { event } of events) {
-      if (event.type === 'meal-planned') {
-        const scheduledForWeekOf = dayjs(event.scheduledForWeekOf);
+    for (const { event, tenantId } of events) {
+      if (
+        event.type === 'meal-planned' &&
+        startOfWeek.isSame(dayjs(event.scheduledForWeekOf), 'day')
+      ) {
+        this.tenantIds.add(tenantId);
+      }
 
-        if (scheduledForWeekOf.isSame(startOfWeek, 'day')) {
-          this.meals.push({ id: event.mealId, ingredients: event.ingredients });
-        }
+      if (
+        event.type === 'shopping-list-aggregated' &&
+        startOfWeek.isSame(dayjs(event.shoppingListForWeekOf), 'day')
+      ) {
+        this.tenantIds.delete(tenantId);
       }
     }
 
@@ -29,15 +40,19 @@ export class PlannedMeals extends ReadModel<PlannedMeals> {
   }
 }
 
-export class ShoppingListMeals extends ReadModel<ShoppingListMeals> {
+export class UnaggregatedShoppingList extends ReadModel<UnaggregatedShoppingList> {
   options: GetEventsOptions = {
-    types: ['shopping-list-aggregated'],
+    types: ['meal-planned'],
+    tenantId: this.tenantId,
     limit: 100,
   };
 
-  meals: Set<string> = new Set();
+  items: string[] = [];
 
-  constructor(private readonly startOfWeek: Date) {
+  constructor(
+    private readonly startOfWeek: Date,
+    private readonly tenantId: TenantID,
+  ) {
     super();
   }
 
@@ -45,12 +60,11 @@ export class ShoppingListMeals extends ReadModel<ShoppingListMeals> {
     const startOfWeek = dayjs(this.startOfWeek);
 
     for (const { event } of events) {
-      if (event.type === 'shopping-list-aggregated') {
-        const shoppingListForWeekOf = dayjs(event.shoppingListForWeekOf);
-
-        if (shoppingListForWeekOf.isSame(startOfWeek, 'day')) {
-          this.meals = new Set(event.mealIds);
-        }
+      if (
+        event.type === 'meal-planned' &&
+        startOfWeek.isSame(dayjs(event.scheduledForWeekOf), 'day')
+      ) {
+        this.items.push(...event.ingredients);
       }
     }
 

@@ -44,7 +44,6 @@ const ShoppingListAggregated = z.object({
   items: z.array(
     z.object({ name: z.string(), quantity: z.string(), category: z.string() }),
   ),
-  mealIds: z.array(z.string()),
   shoppingListForWeekOf: z.coerce.date(),
 });
 
@@ -72,6 +71,7 @@ export type Event = z.infer<typeof Event>;
 export type EventRecord<T extends Event['type'] = Event['type']> = {
   id: number;
   type: T;
+  tenantId: string;
   event: Extract<Event, { type: T }>;
   metadata: { createdAt: Date };
 };

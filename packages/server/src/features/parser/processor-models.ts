@@ -3,7 +3,7 @@ import { GetEventsOptions } from '~/common/eventstore';
 import { ReadModel } from '~/common/readmodel';
 
 export class RecipesToBeParsed extends ReadModel<RecipesToBeParsed> {
-  recipes: { id: string; content: string }[] = [];
+  recipes: { tenantId: string; id: string; content: string }[] = [];
 
   options: GetEventsOptions = {
     types: ['recipe-scraped', 'recipe-parsed'],
@@ -11,11 +11,12 @@ export class RecipesToBeParsed extends ReadModel<RecipesToBeParsed> {
   };
 
   apply(events: EventRecord[]): RecipesToBeParsed {
-    for (const { event } of events) {
+    for (const { event, tenantId } of events) {
       if (event.type === 'recipe-scraped') {
         this.recipes.push({
           id: event.recipeId,
           content: event.text,
+          tenantId,
         });
       }
 

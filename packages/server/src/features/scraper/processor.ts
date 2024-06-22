@@ -37,7 +37,10 @@ export class ScraperProcessor extends Processor {
         try {
           const content = await this.pageScraper.scrapePage(recipe.url);
           await this.commandBus.execute(
-            new ScrapeRecipeCommand({ recipeId: recipe.id, content }),
+            new ScrapeRecipeCommand(recipe.tenantId, {
+              recipeId: recipe.id,
+              content,
+            }),
           );
         } catch (error) {
           console.error(error);

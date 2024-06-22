@@ -1,7 +1,6 @@
-import { Data } from 'effect';
+import { Command } from '~/common/command';
 
-export class AggregateShoppingListCommand extends Data.Class<{
+export class AggregateShoppingListCommand extends Command<{
   items: { name: string; category: string; quantity: string }[];
-  mealIds: string[];
   shoppingListForWeekOf: Date;
 }> {}

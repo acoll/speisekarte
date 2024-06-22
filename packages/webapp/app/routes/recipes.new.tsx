@@ -60,11 +60,12 @@ export default function AddRecipe() {
 }
 
 export const action = async (args: ActionFunctionArgs) => {
+  console.log(args);
+  const api = await getApiClient(args);
+
   const { request } = args;
   const formData = await request.formData();
   const url = String(formData.get("url"));
-
-  const api = await getApiClient(args);
 
   await api.saveRecipe({ body: { url } });
 

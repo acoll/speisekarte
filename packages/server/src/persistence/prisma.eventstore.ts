@@ -10,9 +10,9 @@ export class PrismaEventstore extends Eventstore {
     super();
   }
 
-  async appendEvent(event: Event) {
+  async appendEvent(tenantId: string, event: Event) {
     await this.prisma.eventstore.create({
-      data: { type: event.type, data: event },
+      data: { type: event.type, data: event, tenantId },
     });
   }
 
@@ -43,6 +43,7 @@ export class PrismaEventstore extends Eventstore {
     return rawRecords.map((record) => ({
       id: record.id,
       type: record.type as Event['type'],
+      tenantId: record.tenantId,
       event: Event.parse(record.data),
       metadata: { createdAt: record.createdAt },
     }));

@@ -1,6 +1,6 @@
-import { Data } from 'effect';
+import { Command } from '~/common/command';
 
-export class ScrapeRecipeCommand extends Data.Class<{
+export class ScrapeRecipeCommand extends Command<{
   recipeId: string;
   content: string;
 }> {}

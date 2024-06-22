@@ -6,13 +6,13 @@ import { ParseRecipeCommand } from './commands';
 export class ParseRecipeHandler implements ICommandHandler<ParseRecipeCommand> {
   constructor(private readonly eventstore: Eventstore) {}
   async execute(command: ParseRecipeCommand) {
-    await this.eventstore.appendEvent({
+    await this.eventstore.appendEvent(command.tenantId, {
       type: 'recipe-parsed',
-      recipeId: command.recipeId,
-      name: command.name,
-      description: command.description,
-      ingredients: command.ingredients,
-      instructions: command.instructions,
+      recipeId: command.data.recipeId,
+      name: command.data.name,
+      description: command.data.description,
+      ingredients: command.data.ingredients,
+      instructions: command.data.instructions,
     });
   }
 }

@@ -1,7 +1,8 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Req } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import * as dayjs from 'dayjs';
+import { Request } from 'express';
 import { Eventstore } from '~/common/eventstore';
 import { contract } from '../../api';
 import { PlanMealCommand } from './commands';
@@ -28,14 +29,17 @@ export class WeekPlanController {
   }
 
   @TsRestHandler(contract.planMeal)
-  async planMeal() {
+  async planMeal(@Req() req: Request) {
     return tsRestHandler(contract.planMeal, async ({ body }) => {
       const recipeId = body.recipeId;
 
       const startOfNextWeek = dayjs().startOf('week').add(1, 'week').toDate();
 
       await this.commandBus.execute(
-        new PlanMealCommand({ scheduledForWeekOf: startOfNextWeek, recipeId }),
+        new PlanMealCommand(req.userId, {
+          scheduledForWeekOf: startOfNextWeek,
+          recipeId,
+        }),
       );
       return { status: 201, body: null };
     });

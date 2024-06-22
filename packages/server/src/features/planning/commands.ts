@@ -1,6 +1,6 @@
-import { Data } from 'effect';
+import { Command } from '~/common/command';
 
-export class PlanMealCommand extends Data.Class<{
+export class PlanMealCommand extends Command<{
   scheduledForWeekOf: Date;
   recipeId: string;
 }> {}
