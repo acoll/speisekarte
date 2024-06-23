@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { OpenAIModule } from '~/openai/_module';
-import { PersistenceModule } from '~/persistence/persistence.module';
+import { PersistenceModule } from '~/persistence/_module';
 import { ParseRecipeHandler } from './handler';
 import {
   OpenAIRecipeImageGenerator,

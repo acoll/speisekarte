@@ -1,29 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Eventstore } from '~/common/eventstore';
-import { Processor } from '~/common/processor';
+import {
+  ConsumerPersistenceAdapter,
+  ConsumerProcessor,
+} from '~/common/consumer';
+import { EventRecord } from '~/common/event';
 import { PrismaService } from '~/persistence/prisma.service';
 import { ParseRecipeCommand } from './commands';
 import { RecipeImageGenerator } from './openai/recipe-image-generator';
 import { RecipeParser } from './openai/recipe-parser';
-import { RecipesToBeParsed } from './processor-models';
 
 @Injectable()
-export class ParserProcessor extends Processor {
+export class ParserProcessor extends ConsumerProcessor {
   private isProcessing = false;
 
   constructor(
-    private readonly eventStore: Eventstore,
     private readonly commandBus: CommandBus,
     private readonly recipeParser: RecipeParser,
     private readonly recipeImageGenerator: RecipeImageGenerator,
     private readonly prisma: PrismaService,
+    protected readonly adapter: ConsumerPersistenceAdapter,
   ) {
-    super();
+    super(ParserProcessor.name, adapter);
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS, { name: ParserProcessor.name })
+  @Cron(CronExpression.EVERY_SECOND, { name: ParserProcessor.name })
   async process() {
     if (this.isProcessing) {
       return;
@@ -31,42 +33,44 @@ export class ParserProcessor extends Processor {
 
     this.isProcessing = true;
 
-    try {
-      const recipesToBeParsed = await this.eventStore.loadReadModel(
-        new RecipesToBeParsed(),
-      );
-
-      // do the actual scraping
-      for (const recipe of recipesToBeParsed.recipes) {
-        try {
-          const { name, description, ingredients, instructions } =
-            await this.recipeParser.parseRecipe(recipe.content);
-
-          const imageBuffer =
-            await this.recipeImageGenerator.generateImage(name);
-
-          // we need to store the image to our own file storage - just store in the db for now
-          await this.prisma.image.create({
-            data: { id: recipe.id, data: imageBuffer },
-          });
-
-          await this.commandBus.execute(
-            new ParseRecipeCommand(recipe.tenantId, {
-              recipeId: recipe.id,
-              name,
-              description,
-              ingredients,
-              instructions,
-            }),
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
+    await super.process();
 
     this.isProcessing = false;
+  }
+
+  async consume(record: EventRecord) {
+    const { event, tenantId } = record;
+
+    if (event.type !== 'recipe-scraped') {
+      return;
+    }
+
+    try {
+      const { name, description, ingredients, instructions } =
+        await this.recipeParser.parseRecipe(event.text);
+
+      // TODO: Separate image generation from parsing
+      const imageBuffer = await this.recipeImageGenerator.generateImage(name);
+
+      // we need to store the image to our own file storage - just store in the db for now
+      await this.prisma.image.upsert({
+        where: { id: event.recipeId },
+        update: { data: imageBuffer },
+        create: { id: event.recipeId, data: imageBuffer },
+      });
+
+      const command = new ParseRecipeCommand(tenantId, {
+        recipeId: event.recipeId,
+        name,
+        description,
+        ingredients,
+        instructions,
+      });
+
+      await this.commandBus.execute(command);
+    } catch (error) {
+      console.error(error);
+      // TODO: append events for error cases
+    }
   }
 }

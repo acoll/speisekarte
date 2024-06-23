@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PersistenceModule } from '~/persistence/persistence.module';
+import { PersistenceModule } from '~/persistence/_module';
 import { SaveRecipeController } from './controller';
 import { SaveRecipeHandler } from './handler';
 
