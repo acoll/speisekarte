@@ -32,6 +32,11 @@ export class JwtMiddleware implements NestMiddleware {
       }
 
       req.userId = userId;
+
+      // My hacky shortcut for now, so multiple users can share the same tenant
+      if (user.sharedId) {
+        req.userId = user.sharedId;
+      }
     } catch (err) {
       console.error(err);
       throw new UnauthorizedException('Invalid token');
