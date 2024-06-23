@@ -13,7 +13,7 @@ import { ScraperModule } from './features/scraper/_module';
 import { ShoppingListModule } from './features/shopping-list/_module';
 import { JwtMiddleware } from './jwt.middleware';
 import { LoggingMiddleware } from './logging.middleware';
-import { PersistenceModule } from './persistence/persistence.module';
+import { PersistenceModule } from './persistence/_module';
 
 @Module({
   imports: [

@@ -25,3 +25,8 @@ model Image {
   id   String @id
   data Bytes
 }
+
+model Consumer {
+  id                String @id
+  lastEventConsumed Int
+}

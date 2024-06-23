@@ -1,25 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Eventstore } from '~/common/eventstore';
-import { Processor } from '~/common/processor';
+import {
+  ConsumerPersistenceAdapter,
+  ConsumerProcessor,
+} from '~/common/consumer';
+import { EventRecord } from '~/common/event';
 import { ScrapeRecipeCommand } from './commands';
-import { RecipePagesToScrape } from './processor-models';
 import { PageScraper } from './puppeteer/page-scraper';
 
 @Injectable()
-export class ScraperProcessor extends Processor {
+export class ScraperProcessor extends ConsumerProcessor {
   private isProcessing = false;
 
   constructor(
-    private readonly eventStore: Eventstore,
     private readonly commandBus: CommandBus,
     private readonly pageScraper: PageScraper,
+    protected readonly adapter: ConsumerPersistenceAdapter,
   ) {
-    super();
+    super(ScraperProcessor.name, adapter);
   }
 
-  @Cron(CronExpression.EVERY_10_SECONDS, { name: ScraperProcessor.name })
+  @Cron(CronExpression.EVERY_SECOND, { name: ScraperProcessor.name })
   async process() {
     if (this.isProcessing) {
       return;
@@ -27,29 +29,28 @@ export class ScraperProcessor extends Processor {
 
     this.isProcessing = true;
 
-    try {
-      const { recipePagesToScrape } = await this.eventStore.loadReadModel(
-        new RecipePagesToScrape(),
-      );
-
-      // do the actual scraping
-      for (const recipe of recipePagesToScrape) {
-        try {
-          const content = await this.pageScraper.scrapePage(recipe.url);
-          await this.commandBus.execute(
-            new ScrapeRecipeCommand(recipe.tenantId, {
-              recipeId: recipe.id,
-              content,
-            }),
-          );
-        } catch (error) {
-          console.error(error);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
+    await super.process();
 
     this.isProcessing = false;
+  }
+
+  async consume(record: EventRecord) {
+    const { event, tenantId } = record;
+
+    if (event.type !== 'recipe-saved') {
+      return;
+    }
+
+    try {
+      const content = await this.pageScraper.scrapePage(event.url);
+      const command = new ScrapeRecipeCommand(tenantId, {
+        recipeId: event.recipeId,
+        content,
+      });
+      await this.commandBus.execute(command);
+    } catch (error) {
+      console.error(error);
+      // TODO: append events for error cases
+    }
   }
 }
