@@ -10,11 +10,15 @@ import { ReadModel } from '~/common/readmodel';
 export class PlannedMeals extends ReadModel<PlannedMeals> {
   options: GetEventsOptions = {
     types: ['meal-planned'],
+    tenantId: this.tenantId,
   };
 
   meals: Set<string> = new Set();
 
-  constructor(private readonly startOfWeek: Date) {
+  constructor(
+    private readonly startOfWeek: Date,
+    private readonly tenantId: string,
+  ) {
     super();
   }
 

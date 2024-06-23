@@ -1,5 +1,6 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Req } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
+import { Request } from 'express';
 import { Eventstore } from '~/common/eventstore';
 import { contract } from '../../api';
 import { RecipeReadModel, RecipesReadModel } from './controller-models';
@@ -9,10 +10,10 @@ export class RecipesController {
   constructor(private readonly eventStore: Eventstore) {}
 
   @TsRestHandler(contract.list)
-  async list() {
+  async list(@Req() req: Request) {
     return tsRestHandler(contract.list, async () => {
       const { recipes } = await this.eventStore.loadReadModel(
-        new RecipesReadModel(),
+        new RecipesReadModel(req.userId),
       );
       return { status: 200, body: recipes };
     });

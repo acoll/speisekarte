@@ -51,7 +51,7 @@ export class ParserProcessor extends Processor {
           });
 
           await this.commandBus.execute(
-            new ParseRecipeCommand({
+            new ParseRecipeCommand(recipe.tenantId, {
               recipeId: recipe.id,
               name,
               description,

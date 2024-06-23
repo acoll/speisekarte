@@ -10,11 +10,10 @@ export class AggregateShoppingListHandler
   async execute(command: AggregateShoppingListCommand) {
     // is there any validation here?
 
-    await this.eventstore.appendEvent({
+    await this.eventstore.appendEvent(command.tenantId, {
       type: 'shopping-list-aggregated',
-      mealIds: command.mealIds,
-      items: command.items,
-      shoppingListForWeekOf: command.shoppingListForWeekOf,
+      items: command.data.items,
+      shoppingListForWeekOf: command.data.shoppingListForWeekOf,
     });
   }
 }

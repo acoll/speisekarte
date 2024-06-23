@@ -6,10 +6,10 @@ import { SaveRecipeCommand } from './commands';
 export class SaveRecipeHandler implements ICommandHandler<SaveRecipeCommand> {
   constructor(private readonly eventstore: Eventstore) {}
   async execute(command: SaveRecipeCommand) {
-    await this.eventstore.appendEvent({
+    await this.eventstore.appendEvent(command.tenantId, {
       type: 'recipe-saved',
-      url: command.url,
-      recipeId: command.recipeId,
+      url: command.data.url,
+      recipeId: command.data.recipeId,
     });
   }
 }

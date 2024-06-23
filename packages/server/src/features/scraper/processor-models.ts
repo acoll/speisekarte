@@ -3,7 +3,7 @@ import { GetEventsOptions } from '~/common/eventstore';
 import { ReadModel } from '~/common/readmodel';
 
 export class RecipePagesToScrape extends ReadModel<RecipePagesToScrape> {
-  recipePagesToScrape: { id: string; url: string }[] = [];
+  recipePagesToScrape: { tenantId: string; id: string; url: string }[] = [];
 
   options: GetEventsOptions = {
     types: ['recipe-saved', 'recipe-scraped'],
@@ -11,9 +11,13 @@ export class RecipePagesToScrape extends ReadModel<RecipePagesToScrape> {
   };
 
   apply(events: EventRecord[]): RecipePagesToScrape {
-    for (const { event } of events) {
+    for (const { event, tenantId } of events) {
       if (event.type === 'recipe-saved') {
-        this.recipePagesToScrape.push({ id: event.recipeId, url: event.url });
+        this.recipePagesToScrape.push({
+          tenantId,
+          id: event.recipeId,
+          url: event.url,
+        });
       }
 
       if (event.type === 'recipe-scraped') {

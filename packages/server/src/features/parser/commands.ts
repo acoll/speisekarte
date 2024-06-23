@@ -1,6 +1,6 @@
-import { Data } from 'effect';
+import { Command } from '~/common/command';
 
-export class ParseRecipeCommand extends Data.Class<{
+export class ParseRecipeCommand extends Command<{
   recipeId: string;
   name: string;
   description: string;

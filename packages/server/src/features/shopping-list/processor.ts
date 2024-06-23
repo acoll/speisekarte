@@ -2,12 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import * as dayjs from 'dayjs';
-import { difference } from 'lodash';
 import { Eventstore } from '~/common/eventstore';
 import { Processor } from '~/common/processor';
 import { AggregateShoppingListCommand } from './commands';
 import { ShoppingListAggregator } from './openai/shopping-list-aggregator';
-import { PlannedMeals, ShoppingListMeals } from './processor-models';
+import {
+  TenantsWithUnaggregatedShoppingList,
+  UnaggregatedShoppingList,
+} from './processor-models';
 
 @Injectable()
 export class ShoppingListProcessor extends Processor {
@@ -32,45 +34,27 @@ export class ShoppingListProcessor extends Processor {
     try {
       const startOfNextWeek = dayjs().startOf('week').add(1, 'week').toDate();
 
-      // get the current week plan meals
-      const weekPlanMeals = await this.eventstore.loadReadModel(
-        new PlannedMeals(startOfNextWeek),
+      // get all tenants who need their shopping list aggregated
+      const { tenantIds } = await this.eventstore.loadReadModel(
+        new TenantsWithUnaggregatedShoppingList(startOfNextWeek),
       );
 
-      // get the current shopping list's meals
-      const shoppingListMeals = await this.eventstore.loadReadModel(
-        new ShoppingListMeals(startOfNextWeek),
-      );
+      for (const tenantId of tenantIds) {
+        // get all unaggregated shopping lists
+        const { items } = await this.eventstore.loadReadModel(
+          new UnaggregatedShoppingList(startOfNextWeek, tenantId),
+        );
 
-      // if the shopping list's meals includes all the meals in the week plan, then we're good
-      const weekPlanMealIds = Array.from(
-        weekPlanMeals.meals.map((meal) => meal.id),
-      );
-      const shoppingListMealIds = Array.from(shoppingListMeals.meals);
+        const aggregatedItems =
+          await this.shoppingListAggregator.aggregate(items);
 
-      const diffMealIds = difference(weekPlanMealIds, shoppingListMealIds);
+        const command = new AggregateShoppingListCommand(tenantId, {
+          items: aggregatedItems,
+          shoppingListForWeekOf: startOfNextWeek,
+        });
 
-      if (diffMealIds.length === 0) {
-        return;
+        await this.commandBus.execute(command);
       }
-
-      // Compile all ingredients for all meals
-      const ingredients = weekPlanMeals.meals.flatMap(
-        (meal) => meal.ingredients,
-      );
-
-      // aggregate the ingredients
-      const aggregatedItems =
-        await this.shoppingListAggregator.aggregate(ingredients);
-
-      // create a command to add the aggregated ingredients to the shopping list
-      const command = new AggregateShoppingListCommand({
-        items: aggregatedItems,
-        mealIds: weekPlanMealIds,
-        shoppingListForWeekOf: startOfNextWeek,
-      });
-
-      await this.commandBus.execute(command);
     } catch (err) {
       console.error(err);
     }

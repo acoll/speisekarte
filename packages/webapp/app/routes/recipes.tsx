@@ -3,6 +3,7 @@
  * @see https://v0.dev/t/lrWthrFiBql
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
+import { LoaderFunctionArgs } from "@remix-run/node";
 import {
   Link,
   Outlet,
@@ -12,9 +13,10 @@ import {
 } from "@remix-run/react";
 import { useEffect } from "react";
 import { Input } from "~/components/ui/input";
-import { api } from "~/lib/api";
+import { getApiClient } from "~/lib/api";
 
-export const loader = async () => {
+export const loader = async (args: LoaderFunctionArgs) => {
+  const api = await getApiClient(args);
   const response = await api.list();
 
   if (response.status !== 200) {
@@ -53,8 +55,8 @@ export default function RecipesList() {
             <div className="flex justify-between items-center gap-4">
               <div>
                 <Input
-                  type="search"
                   disabled
+                  type="search"
                   placeholder="Search recipes..."
                   className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400"
                 />

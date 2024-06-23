@@ -16,6 +16,7 @@ datasource db {
 model Eventstore {
   id        Int      @id @default(autoincrement())
   type      String
+  tenantId  String
   data      Json
   createdAt DateTime @default(now())
 }

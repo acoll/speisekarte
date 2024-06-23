@@ -4,7 +4,10 @@ import { GetEventsOptions } from '~/common/eventstore';
 import { ReadModel } from '~/common/readmodel';
 
 export class ShoppingList extends ReadModel<ShoppingList> {
-  options: GetEventsOptions = {};
+  options: GetEventsOptions = {
+    tenantId: this.tenantId,
+    types: ['shopping-list-aggregated'],
+  };
 
   items: {
     name: string;
@@ -12,7 +15,10 @@ export class ShoppingList extends ReadModel<ShoppingList> {
     category: string;
   }[] = [];
 
-  constructor(private readonly startOfWeek: Date) {
+  constructor(
+    private readonly startOfWeek: Date,
+    private readonly tenantId: string,
+  ) {
     super();
   }
 

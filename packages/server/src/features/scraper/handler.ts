@@ -10,7 +10,7 @@ export class ScrapeRecipeHandler
   async execute(command: ScrapeRecipeCommand) {
     // check if its been scraped already
     const eventsForUrl = await this.eventstore.getEvents({
-      recipeId: command.recipeId,
+      recipeId: command.data.recipeId,
       types: ['recipe-scraped'],
     });
 
@@ -18,10 +18,10 @@ export class ScrapeRecipeHandler
       return;
     }
 
-    await this.eventstore.appendEvent({
+    await this.eventstore.appendEvent(command.tenantId, {
       type: 'recipe-scraped',
-      recipeId: command.recipeId,
-      text: command.content,
+      recipeId: command.data.recipeId,
+      text: command.data.content,
     });
   }
 }

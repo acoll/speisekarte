@@ -10,7 +10,13 @@ export class RecipesReadModel extends ReadModel<RecipesReadModel> {
     status: 'scraping' | 'parsing' | 'done';
   }[] = [];
 
-  options: GetEventsOptions = {};
+  options: GetEventsOptions = {
+    tenantId: this.tenantId,
+  };
+
+  constructor(private readonly tenantId: string) {
+    super();
+  }
 
   apply(events: EventRecord[]): RecipesReadModel {
     for (const { event } of events) {

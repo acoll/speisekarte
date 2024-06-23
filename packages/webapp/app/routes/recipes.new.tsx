@@ -14,7 +14,7 @@ import {
   DialogTitle,
 } from "~/components/ui/dialog";
 import { Input } from "~/components/ui/input";
-import { api } from "~/lib/api";
+import { getApiClient } from "~/lib/api";
 
 export default function AddRecipe() {
   const navigate = useNavigate();
@@ -59,7 +59,10 @@ export default function AddRecipe() {
   );
 }
 
-export const action = async ({ request }: ActionFunctionArgs) => {
+export const action = async (args: ActionFunctionArgs) => {
+  const api = await getApiClient(args);
+
+  const { request } = args;
   const formData = await request.formData();
   const url = String(formData.get("url"));
 

@@ -8,10 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
-import { api } from "~/lib/api";
+import { getApiClient } from "~/lib/api";
 
 export const loader = async (args: LoaderFunctionArgs) => {
   const { recipeId } = args.params;
+
+  const api = await getApiClient(args);
 
   const [planResponse, recipeResponse] = await Promise.all([
     api.plannedMeals(),
@@ -88,8 +90,9 @@ export default function RecipePage() {
   );
 }
 
-export const action = async ({ request }: ActionFunctionArgs) => {
-  const formData = await request.formData();
+export const action = async (args: ActionFunctionArgs) => {
+  const api = await getApiClient(args);
+  const formData = await args.request.formData();
   const recipeId = String(formData.get("recipeId"));
 
   await api.planMeal({ body: { recipeId } });
