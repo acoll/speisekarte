@@ -1,10 +1,10 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Logger, MiddlewareConsumer, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CommandBus, CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
 import { ScheduleModule } from '@nestjs/schedule';
 import { Subject, takeUntil } from 'rxjs';
-import { inspect } from 'util';
+import { Command } from './common/command';
 import { ParserModule } from './features/parser/_module';
 import { WeekPlanModule } from './features/planning/_module';
 import { RecipesModule } from './features/recipes/_module';
@@ -39,18 +39,15 @@ import { PersistenceModule } from './persistence/persistence.module';
   ],
 })
 export class AppModule {
+  private readonly logger = new Logger(AppModule.name);
+
   private destroy$ = new Subject<void>();
 
   constructor(private readonly bus: CommandBus) {
     this.bus.pipe(takeUntil(this.destroy$)).subscribe((command) => {
-      console.log(
-        'CMD::',
-        command.constructor.name,
-        inspect(command, {
-          maxStringLength: 10,
-          maxArrayLength: 1,
-          colors: true,
-        }),
+      const cmd = command as Command<any>;
+      this.logger.log(
+        `Command [${cmd.constructor.name}] tenantId=${cmd.tenantId}`,
       );
     });
   }

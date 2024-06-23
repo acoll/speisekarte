@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { Event, EventRecord } from '~/common/event';
 import { Eventstore, GetEventsOptions } from '~/common/eventstore';
@@ -6,14 +6,20 @@ import { PrismaService } from './prisma.service';
 
 @Injectable()
 export class PrismaEventstore extends Eventstore {
+  private readonly logger = new Logger(PrismaEventstore.name);
+
   constructor(private readonly prisma: PrismaService) {
     super();
   }
 
   async appendEvent(tenantId: string, event: Event) {
-    await this.prisma.eventstore.create({
+    const record = await this.prisma.eventstore.create({
       data: { type: event.type, data: event, tenantId },
     });
+
+    this.logger.log(
+      `Event [${record.type}] tenantId=${record.tenantId} ${record.id}`,
+    );
   }
 
   async getEvents(options?: GetEventsOptions): Promise<EventRecord[]> {
