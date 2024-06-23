@@ -12,7 +12,6 @@ import {
   useRevalidator,
 } from "@remix-run/react";
 import { useEffect } from "react";
-import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { getApiClient } from "~/lib/api";
 
@@ -54,16 +53,11 @@ export default function RecipesList() {
               Browse Recipes
             </h1>
             <div className="flex justify-between items-center gap-4">
-              <Link to="/">
-                <Button>This Week</Button>
-              </Link>
-              <Link to="/recipes/new">
-                <Button>New Recipe</Button>
-              </Link>
               <div>
                 <Input
                   disabled
                   type="search"
+                  disabled
                   placeholder="Search recipes..."
                   className="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 dark:focus:ring-primary-400"
                 />

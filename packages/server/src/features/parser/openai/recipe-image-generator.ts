@@ -18,7 +18,7 @@ export class OpenAIRecipeImageGenerator extends RecipeImageGenerator {
       prompt: this.prompt(recipeName),
       n: 1,
       size: '1024x1024',
-      style: 'natural',
+      style: 'vivid',
     });
 
     const url = response.data[0].url;
@@ -33,7 +33,7 @@ export class OpenAIRecipeImageGenerator extends RecipeImageGenerator {
   }
 
   private prompt(recipeName: string) {
-    return `${recipeName}. photorealistic, homemade`;
+    return `${recipeName}, cartoon, photorealistic, homemade`;
   }
 
   private async downloadImage(url: string): Promise<Buffer> {
