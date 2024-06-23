@@ -28,7 +28,10 @@ export default function AddRecipe() {
         }
       }}
     >
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent
+        className="sm:max-w-[500px]"
+        aria-describedby="New Recipe Dialog"
+      >
         <DialogHeader>
           <DialogTitle>New Recipe</DialogTitle>
         </DialogHeader>
