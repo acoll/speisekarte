@@ -6,7 +6,11 @@ import { ReadModel } from '~/common/readmodel';
 export class ShoppingList extends ReadModel<ShoppingList> {
   options: GetEventsOptions = {
     tenantId: this.tenantId,
-    types: ['shopping-list-aggregated'],
+    types: [
+      'shopping-list-aggregated',
+      'meal-planned',
+      'shopping-list-requested',
+    ],
   };
 
   items: {
@@ -14,6 +18,8 @@ export class ShoppingList extends ReadModel<ShoppingList> {
     quantity: string;
     category: string;
   }[] = [];
+
+  status: 'changed' | 'ready' | 'requested' = 'changed';
 
   constructor(
     private readonly startOfWeek: Date,
@@ -25,13 +31,31 @@ export class ShoppingList extends ReadModel<ShoppingList> {
   apply(events: EventRecord[]) {
     const startOfWeek = dayjs(this.startOfWeek);
 
-    for (const { event } of events) {
-      if (event.type === 'shopping-list-aggregated') {
-        const shoppingListForWeekOf = dayjs(event.shoppingListForWeekOf);
+    const isSameWeek = (date: Date) => dayjs(date).isSame(startOfWeek, 'day');
 
-        if (shoppingListForWeekOf.isSame(startOfWeek, 'day')) {
-          this.items = event.items;
-        }
+    for (const { event } of events) {
+      if (
+        event.type === 'shopping-list-requested' &&
+        isSameWeek(event.scheduledForWeekOf)
+      ) {
+        this.items = [];
+        this.status = 'requested';
+      }
+
+      if (
+        event.type === 'meal-planned' &&
+        isSameWeek(event.scheduledForWeekOf)
+      ) {
+        this.items = [];
+        this.status = 'changed';
+      }
+
+      if (
+        event.type === 'shopping-list-aggregated' &&
+        isSameWeek(event.shoppingListForWeekOf)
+      ) {
+        this.items = event.items;
+        this.status = 'ready';
       }
     }
 

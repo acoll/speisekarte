@@ -37,6 +37,13 @@ const MealPlanned = z.object({
   scheduledForWeekOf: z.coerce.date(),
 });
 
+const ShoppingListRequested = z.object({
+  type: z.literal('shopping-list-requested'),
+  scheduledForWeekOf: z.coerce.date(),
+});
+
+type ShoppingListRequested = z.infer<typeof ShoppingListRequested>;
+
 type MealPlanned = z.infer<typeof MealPlanned>;
 
 const ShoppingListAggregated = z.object({
@@ -62,6 +69,7 @@ export const Event = z.discriminatedUnion('type', [
   RecipeScraped,
   RecipeParsed,
   MealPlanned,
+  ShoppingListRequested,
   ShoppingListAggregated,
   ShoppingListItemChecked,
 ]);

@@ -15,6 +15,8 @@ import { JwtMiddleware } from './jwt.middleware';
 import { LoggingMiddleware } from './logging.middleware';
 import { PersistenceModule } from './persistence/_module';
 
+console.log(process.env.OPENAI_API_KEY);
+
 @Module({
   imports: [
     JwtModule.register({

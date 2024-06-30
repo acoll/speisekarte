@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 import { OpenAIModule } from '~/openai/_module';
 import { ShoppingListController } from './controller';
-import { AggregateShoppingListHandler } from './handler';
+import {
+  AggregateShoppingListHandler,
+  RequestShoppingListHandler,
+} from './handler';
 import {
   OpenAIShoppingListAggregator,
   ShoppingListAggregator,
@@ -14,6 +17,7 @@ import { ShoppingListProcessor } from './processor';
   providers: [
     ShoppingListProcessor,
     AggregateShoppingListHandler,
+    RequestShoppingListHandler,
     {
       provide: ShoppingListAggregator,
       useClass: OpenAIShoppingListAggregator,

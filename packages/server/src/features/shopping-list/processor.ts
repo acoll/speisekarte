@@ -40,7 +40,9 @@ export class ShoppingListProcessor extends ConsumerProcessor {
   async consume(record: EventRecord) {
     const { event, tenantId } = record;
 
-    if (event.type !== 'meal-planned') {
+    console.log('Shopping List Processor', event);
+
+    if (event.type !== 'shopping-list-requested') {
       return;
     }
 

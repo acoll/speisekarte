@@ -4,9 +4,15 @@
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
 
-import { LoaderFunctionArgs, json } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import {
+  ActionFunctionArgs,
+  LoaderFunctionArgs,
+  json,
+  redirect,
+} from "@remix-run/node";
+import { Form, Link, useLoaderData } from "@remix-run/react";
 import { useState } from "react";
+import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { getApiClient } from "~/lib/api";
 
@@ -29,11 +35,13 @@ export const loader = async (args: LoaderFunctionArgs) => {
   return json({
     meals: plannedMealsResponse.body.meals,
     shoppingListItems: shoppingListResponse.body.items,
+    shoppingListStatus: shoppingListResponse.body.status,
   });
 };
 
 export default function Component() {
-  const { meals, shoppingListItems } = useLoaderData<typeof loader>();
+  const { meals, shoppingListItems, shoppingListStatus } =
+    useLoaderData<typeof loader>();
 
   const daysOfWeek = [
     "Monday",
@@ -97,7 +105,20 @@ export default function Component() {
         ))}
       </div>
       <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">Shopping List</h2>
+        <h2 className="text-2xl font-bold mb-4 flex items-center gap-4">
+          Shopping List
+          {shoppingListStatus === "changed" && (
+            <Form method="post">
+              <Button type="submit">Request Shopping List</Button>
+            </Form>
+          )}
+          {shoppingListStatus === "requested" ? (
+            <p className="italic text-gray-400 text-sm">Building...</p>
+          ) : (
+            ""
+          )}
+        </h2>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {shoppingList.map((category, categoryIndex) => (
             <div
@@ -132,3 +153,11 @@ export default function Component() {
     </div>
   );
 }
+
+export const action = async (args: ActionFunctionArgs) => {
+  const api = await getApiClient(args);
+
+  await api.requestShoppingList();
+
+  return redirect("/");
+};

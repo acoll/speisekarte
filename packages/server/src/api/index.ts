@@ -29,11 +29,23 @@ export const contract = c.router({
     },
     summary: 'Get all recipes',
   },
+  requestShoppingList: {
+    method: 'POST',
+    path: '/shopping-list/request',
+    responses: { 201: null },
+    body: z.object({}),
+    summary: 'Request the shopping list',
+  },
   shoppingList: {
     method: 'GET',
     path: '/shopping-list',
     responses: {
       200: z.object({
+        status: z.union([
+          z.literal('changed'),
+          z.literal('ready'),
+          z.literal('requested'),
+        ]),
         items: z.array(
           z.object({
             name: z.string(),
